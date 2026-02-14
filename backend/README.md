@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Backend — Acuity Invest
 
 A Node.js/Express API server providing authentication, portfolio management, AI-powered insights, and market data endpoints.
@@ -169,10 +170,18 @@ POST   /subscription/downgrade   Downgrade to FREE
 - Google Gemini API key
 
 ### Installation
+=======
+# Backend
+
+This folder contains the server-side API for Acuity Invest.
+
+## Setup
+>>>>>>> c68661a9d582f3c944e0045bf72774e27609c3f0
 
 ```bash
 cd backend
 npm install
+<<<<<<< HEAD
 ```
 
 ### Environment Configuration
@@ -343,3 +352,19 @@ Check user's subscription tier with `GET /subscription/current`.
 - [Architecture Document](../docs/architecture.md) — System design and integration
 - [UX Design](../docs/ux-design.md) — Frontend design specifications
 - [Frontend Documentation](../frontend/README.md) — Client-side code
+=======
+npm run start
+```
+
+## Features
+- RESTful API for insights, portfolio, market data
+- JWT authentication
+- Rate limiting and middleware
+- Integration with Google Gemini AI and Langfuse
+- SQLite database
+
+## Documentation
+- [Project Root README](../README.md)
+- [Architecture](../docs/architecture.md)
+- [UX Design](../docs/ux-design.md)
+>>>>>>> c68661a9d582f3c944e0045bf72774e27609c3f0

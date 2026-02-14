@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Frontend — Acuity Invest
 
 A modern React SPA providing an intuitive interface for portfolio management and AI-powered financial insights.
@@ -110,10 +111,18 @@ See [UX Design](../docs/ux-design.md#12-color-palette) for complete palette and 
 - npm or yarn
 
 ### Installation
+=======
+# Frontend
+
+This folder contains the client-side code for Acuity Invest.
+
+## Setup
+>>>>>>> c68661a9d582f3c944e0045bf72774e27609c3f0
 
 ```bash
 cd frontend
 npm install
+<<<<<<< HEAD
 ```
 
 ### Development Server
@@ -251,3 +260,18 @@ Ensure the backend is running and CORS is configured correctly. Check [Backend S
 - [UX Design Specification](../docs/ux-design.md) — Design system and component specs
 - [Architecture Document](../docs/architecture.md) — System design and data flow
 - [Backend Documentation](../backend/README.md) — API reference
+=======
+npm run dev
+```
+
+## Features
+- Modern dashboard UI
+- Insights, portfolio, subscription management
+- Responsive design
+- API integration with backend
+
+## Documentation
+- [Project Root README](../README.md)
+- [Architecture](../docs/architecture.md)
+- [UX Design](../docs/ux-design.md)
+>>>>>>> c68661a9d582f3c944e0045bf72774e27609c3f0

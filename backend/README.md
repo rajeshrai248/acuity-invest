@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Backend — Acuity Invest
 
 A Node.js/Express API server providing authentication, portfolio management, AI-powered insights, and market data endpoints.
@@ -170,13 +169,6 @@ POST   /subscription/downgrade   Downgrade to FREE
 - Google Gemini API key
 
 ### Installation
-=======
-# Backend
-
-This folder contains the server-side API for Acuity Invest.
-
-## Setup
->>>>>>> c68661a9d582f3c944e0045bf72774e27609c3f0
 
 ```bash
 cd backend

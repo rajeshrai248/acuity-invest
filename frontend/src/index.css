@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+/* ============================================
+   Acuity Invest — Custom Styles
+   ING Design Aesthetic
+   ============================================ */
+
+/* Custom theme variables */
+@theme {
+  --color-ing-orange: #FF6200;
+  --color-ing-orange-dark: #E85800;
+  --color-gain: #16A34A;
+  --color-loss: #DC2626;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Base styles */
+html {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* Tabular numbers for financial data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Smooth modal animation */
+.animate-in {
+  animation: animateIn 0.2s ease-out;
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Mermaid chart container */
+.insight-display svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Table responsive wrapper */
+.insight-display table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Loading dots animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus ring consistency */
+*:focus-visible {
+  outline: 2px solid #FF6200;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(255, 98, 0, 0.15);
+  color: inherit;
+}

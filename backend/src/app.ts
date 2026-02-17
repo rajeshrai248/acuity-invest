@@ -7,6 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { config } from './config';
 import { generalRateLimiter } from './middleware/rateLimiter.middleware';
+import { sanitizeInputs, additionalSecurityHeaders } from './middleware/security.middleware';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.middleware';
 
 // Route imports
@@ -23,7 +24,33 @@ const app = express();
 // ============================================================
 
 // Helmet — set various HTTP security headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: true,
+    crossOriginResourcePolicy: { policy: 'same-origin' },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    noSniff: true,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  })
+);
+
+// Disable X-Powered-By to not leak Express
+app.disable('x-powered-by');
 
 // CORS — allow requests from the frontend origin
 app.use(
@@ -45,6 +72,12 @@ app.use(generalRateLimiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Sanitize inputs — strip HTML tags to prevent XSS
+app.use(sanitizeInputs);
+
+// Additional security headers
+app.use(additionalSecurityHeaders);
+
 // ============================================================
 // Health Check
 // ============================================================
@@ -54,8 +87,6 @@ app.get('/api/v1/health', (_req, res) => {
     success: true,
     data: {
       status: 'healthy',
-      version: '1.0.0',
-      environment: config.nodeEnv,
       timestamp: new Date().toISOString(),
     },
   });

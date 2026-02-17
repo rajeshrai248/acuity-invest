@@ -4,10 +4,18 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import path from 'path';
 import { initializeDatabase, getDatabase, closeDatabase } from './database';
+
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const SEED_USER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const SEED_PORTFOLIO_ID = '550e8400-e29b-41d4-a716-446655440002';
+
+const SEED_EMAIL = process.env.SEED_USER_EMAIL || 'demo@acuityinvest.com';
+const SEED_PASSWORD = process.env.SEED_USER_PASSWORD || 'Demo@12345';
+const SEED_NAME = process.env.SEED_USER_NAME || 'Demo User';
 
 interface SeedHolding {
   ticker: string;
@@ -47,13 +55,13 @@ async function seed(): Promise<void> {
   `);
 
   console.log('Creating seed user...');
-  const passwordHash = await bcrypt.hash('Premium@123', 10);
+  const passwordHash = await bcrypt.hash(SEED_PASSWORD, 12);
 
   const insertUser = db.prepare(`
     INSERT INTO users (id, name, email, password_hash, subscription_tier)
     VALUES (?, ?, ?, ?, ?)
   `);
-  insertUser.run(SEED_USER_ID, 'Rajesh Menon', 'rajesh@acuityinvest.com', passwordHash, 'PREMIUM');
+  insertUser.run(SEED_USER_ID, SEED_NAME, SEED_EMAIL, passwordHash, 'PREMIUM');
 
   console.log('Creating seed portfolio...');
   const insertPortfolio = db.prepare(`
@@ -77,12 +85,12 @@ async function seed(): Promise<void> {
   insertMany(seedHoldings);
 
   console.log('Seed data created successfully!');
-  console.log(`  User: Rajesh Menon (${SEED_USER_ID})`);
-  console.log(`  Email: rajesh@acuityinvest.com`);
-  console.log(`  Password: Premium@123`);
+  console.log(`  User: ${SEED_NAME} (${SEED_USER_ID})`);
+  console.log(`  Email: ${SEED_EMAIL}`);
   console.log(`  Tier: PREMIUM`);
   console.log(`  Portfolio: Growth & Income Portfolio (${SEED_PORTFOLIO_ID})`);
   console.log(`  Holdings: ${seedHoldings.length} positions`);
+  console.log('  (Password is configured via SEED_USER_PASSWORD env var)');
 
   closeDatabase();
 }

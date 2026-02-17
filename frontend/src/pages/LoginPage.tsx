@@ -145,7 +145,7 @@ export default function LoginPage({ onLogin, onRegister, loading, error }: Login
 
         {/* Seed user hint (dev only) */}
         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
-          <strong>Demo account:</strong> rajesh@acuityinvest.com / Premium@123
+          <strong>Demo account:</strong> demo@acuityinvest.com / Demo@12345
         </div>
       </div>
     </div>

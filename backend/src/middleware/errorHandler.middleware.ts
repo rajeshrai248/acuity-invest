@@ -63,7 +63,6 @@ export function errorHandler(
   const response: ApiResponse = {
     success: false,
     error: message,
-    ...(config.isDev && statusCode >= 500 ? { message: err.stack } : {}),
   };
 
   res.status(statusCode).json(response);

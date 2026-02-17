@@ -26,16 +26,31 @@ export const generalRateLimiter = rateLimit({
 
 /**
  * Auth rate limiter — applies to login/register routes.
- * 30 attempts per 15 minutes per IP.
+ * 10 attempts per 15 minutes per IP to resist brute force.
  */
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
     error: 'Too many authentication attempts. Please try again later.',
+  },
+});
+
+/**
+ * Subscription rate limiter — prevent abuse of upgrade endpoint.
+ * 3 attempts per hour per IP.
+ */
+export const subscriptionRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: 'Too many subscription requests. Please try again later.',
   },
 });
 

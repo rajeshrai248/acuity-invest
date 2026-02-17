@@ -141,7 +141,113 @@ npm test -- tests/security/
 
 ## Deployment
 
-See [Architecture Document](./docs/architecture.md#8-deployment-architecture) for deployment strategies and infrastructure setup.
+The application is fully containerized and deployed as a single Docker Compose stack with both frontend and backend services.
+
+### Prerequisites
+- Docker and Docker Compose
+- Access to required environment variables
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd acuity-invest
+
+# Create .env file with required variables
+cp .env.example .env
+# Edit .env with your configuration values
+
+# Start the application
+docker-compose up -d
+
+# Services will be available at:
+# - Frontend: http://localhost
+# - Backend API: http://localhost/api
+```
+
+### Environment Configuration
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+# Server Configuration
+PORT=3001
+NODE_ENV=production
+
+# Database
+DATABASE_PATH=./data/acuity.db
+
+# Authentication
+JWT_SECRET=your-secure-random-secret-key
+
+# AI/ML
+GEMINI_API_KEY=your-google-gemini-api-key
+
+# Observability (Optional)
+LANGFUSE_SECRET_KEY=your-langfuse-secret-key
+LANGFUSE_PUBLIC_KEY=your-langfuse-public-key
+
+# Frontend Configuration
+VITE_API_BASE_URL=http://localhost/api
+```
+
+### Docker Compose Management
+
+```bash
+# Start services in detached mode
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild images (after code changes)
+docker-compose up -d --build
+
+# Remove data and restart clean
+docker-compose down -v
+docker-compose up -d
+```
+
+### Database Initialization
+
+The database is automatically initialized on first run. To seed with sample data:
+
+```bash
+# Access the backend container
+docker-compose exec backend npm run db:seed
+```
+
+### Production Deployment Checklist
+
+1. **Environment Variables** — Secure all sensitive variables (use secrets management, not version control)
+2. **JWT Secret** — Generate a strong, random secret:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+3. **SSL/TLS** — Use a reverse proxy (nginx, Traefik) for HTTPS
+4. **Rate Limiting** — Adjust rate limit configuration for your traffic
+5. **Database Backups** — Implement regular backups of the SQLite database
+6. **Monitoring & Logging** — Set up log aggregation and error tracking
+7. **Docker Registry** — Push images to a private docker registry for production
+
+### Verification
+
+```bash
+# Check if containers are running
+docker-compose ps
+
+# Test backend API
+curl http://localhost/api/health
+
+# Access frontend
+open http://localhost
+```
+
+For detailed architecture information, see [Architecture Document](./docs/architecture.md).
 
 ## Support & Contributing
 

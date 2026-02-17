@@ -76,12 +76,23 @@ export function initializeDatabase(): void {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS mcp_api_keys (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      key_hash TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL DEFAULT 'default',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_used_at DATETIME
+    );
+
     -- Indexes for performance
     CREATE INDEX IF NOT EXISTS idx_portfolios_user_id ON portfolios(user_id);
     CREATE INDEX IF NOT EXISTS idx_holdings_portfolio_id ON holdings(portfolio_id);
     CREATE INDEX IF NOT EXISTS idx_insight_logs_user_id ON insight_logs(user_id);
     CREATE INDEX IF NOT EXISTS idx_insight_logs_created_at ON insight_logs(created_at);
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+    CREATE INDEX IF NOT EXISTS idx_mcp_api_keys_key_hash ON mcp_api_keys(key_hash);
+    CREATE INDEX IF NOT EXISTS idx_mcp_api_keys_user_id ON mcp_api_keys(user_id);
   `);
 
   console.log('Database initialized successfully.');

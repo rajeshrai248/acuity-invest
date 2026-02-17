@@ -3,6 +3,7 @@
 // ============================================================
 
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -84,6 +85,16 @@ async function seed(): Promise<void> {
 
   insertMany(seedHoldings);
 
+  // Generate MCP API key for the demo user
+  console.log('Creating MCP API key...');
+  const rawApiKey = `acuity_${crypto.randomBytes(32).toString('hex')}`;
+  const keyHash = crypto.createHash('sha256').update(rawApiKey).digest('hex');
+  db.prepare(`DELETE FROM mcp_api_keys WHERE user_id = ?`).run(SEED_USER_ID);
+  db.prepare(`
+    INSERT INTO mcp_api_keys (id, user_id, key_hash, name)
+    VALUES (?, ?, ?, ?)
+  `).run(uuidv4(), SEED_USER_ID, keyHash, 'demo-key');
+
   console.log('Seed data created successfully!');
   console.log(`  User: ${SEED_NAME} (${SEED_USER_ID})`);
   console.log(`  Email: ${SEED_EMAIL}`);
@@ -91,6 +102,9 @@ async function seed(): Promise<void> {
   console.log(`  Portfolio: Growth & Income Portfolio (${SEED_PORTFOLIO_ID})`);
   console.log(`  Holdings: ${seedHoldings.length} positions`);
   console.log('  (Password is configured via SEED_USER_PASSWORD env var)');
+  console.log('');
+  console.log(`  MCP API Key: ${rawApiKey}`);
+  console.log('  (Save this key — it cannot be retrieved again)');
 
   closeDatabase();
 }

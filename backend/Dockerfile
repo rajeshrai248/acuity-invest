@@ -5,11 +5,14 @@
 # --- Stage 1: Build ---
 FROM node:20-alpine AS builder
 
+# Install build tools required by native addons (better-sqlite3)
+RUN apk add --no-cache python3 make g++
+
 WORKDIR /app
 
 # Install dependencies first (layer caching)
 COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+RUN npm ci
 
 # Copy source and build
 COPY tsconfig.json ./
@@ -19,6 +22,9 @@ RUN npm run build
 # --- Stage 2: Production ---
 FROM node:20-alpine AS production
 
+# Install build tools required by native addons (better-sqlite3)
+RUN apk add --no-cache python3 make g++
+
 # Run as non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
@@ -26,7 +32,10 @@ WORKDIR /app
 
 # Install production dependencies only
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Remove build tools after native modules are compiled
+RUN apk del python3 make g++
 
 # Copy compiled code from builder
 COPY --from=builder /app/dist ./dist

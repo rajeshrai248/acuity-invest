@@ -8,9 +8,10 @@ interface DashboardPageProps {
   summary: PortfolioSummaryData;
   holdings: HoldingWithMetrics[];
   customerName: string;
+  baseCurrency?: string;
 }
 
-export default function DashboardPage({ summary, holdings, customerName }: DashboardPageProps) {
+export default function DashboardPage({ summary, holdings, customerName, baseCurrency }: DashboardPageProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -24,7 +25,7 @@ export default function DashboardPage({ summary, holdings, customerName }: Dashb
       </div>
 
       {/* Portfolio Summary Cards */}
-      <PortfolioSummary summary={summary} />
+      <PortfolioSummary summary={summary} baseCurrency={baseCurrency} />
 
       {/* Market Movers */}
       <MarketMovers />

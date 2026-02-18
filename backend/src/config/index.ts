@@ -46,7 +46,7 @@ export const config = {
   // Google Gemini AI
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: 'gemini-2.0-flash',
-  maxTokens: 4096,
+  maxTokens: 8192,
 
   // JWT
   jwtSecret: resolveJwtSecret(),

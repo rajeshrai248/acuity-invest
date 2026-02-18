@@ -107,21 +107,45 @@ export async function fetchPortfolio(): Promise<FetchPortfolioResult> {
   const userRaw = localStorage.getItem('auth_user');
   const user = userRaw ? JSON.parse(userRaw) : null;
 
-  // 4. Map to frontend Portfolio shape
+  // 4. Map to frontend Portfolio shape (current_price starts as avg_cost)
+  const rawHoldings = (detail.holdings || []).map((h) => ({
+    ticker: h.ticker,
+    name: h.name,
+    shares: h.shares,
+    avg_cost: h.avg_cost,
+    current_price: h.avg_cost,
+    purchase_date: h.purchase_date || '',
+  }));
+
+  // 5. Enrich with live market prices
+  if (rawHoldings.length > 0) {
+    try {
+      const tickers = rawHoldings.map((h) => h.ticker);
+      const quotesResp = await api.post<ApiEnvelope<{ ticker: string; price: number }[]>>(
+        '/market/quotes',
+        { tickers }
+      );
+      const quotes = quotesResp.data.data;
+      const priceMap = new Map(quotes.map((q) => [q.ticker.toUpperCase(), q.price]));
+
+      for (const h of rawHoldings) {
+        const livePrice = priceMap.get(h.ticker.toUpperCase());
+        if (livePrice && livePrice > 0) {
+          h.current_price = livePrice;
+        }
+      }
+    } catch {
+      // Market data unavailable — keep avg_cost as fallback
+    }
+  }
+
   const portfolio: Portfolio = {
     customer_id: detail.id,
     customer_name: user?.name || 'User',
     account_type: detail.account_type,
     base_currency: detail.base_currency,
     subscription_tier: user?.subscription_tier || 'FREE',
-    holdings: (detail.holdings || []).map((h) => ({
-      ticker: h.ticker,
-      name: h.name,
-      shares: h.shares,
-      avg_cost: h.avg_cost,
-      current_price: h.avg_cost, // Will be enriched by market data if available
-      purchase_date: h.purchase_date || '',
-    })),
+    holdings: rawHoldings,
   };
 
   return { portfolioId: detail.id, portfolio };
@@ -157,7 +181,9 @@ export async function fetchInsight(query: InsightQuery): Promise<string> {
     await delay(2000); // Simulate AI processing time
     return mockInsightResponse;
   }
-  const response = await api.post<ApiEnvelope<{ insights: string; response?: string }>>('/insights', query);
+  const response = await api.post<ApiEnvelope<{ insights: string; response?: string }>>('/insights', query, {
+    timeout: 120000, // 2 min — AI generation can be slow
+  });
   const data = response.data.data;
   return data.response || data.insights || '';
 }

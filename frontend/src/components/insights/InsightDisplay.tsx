@@ -2,43 +2,72 @@ import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import MermaidChart from './MermaidChart';
+import ChartRenderer from '../charts/ChartRenderer';
 import type { Components } from 'react-markdown';
+import type { ChartData } from '../../types/charts';
 
 interface InsightDisplayProps {
   content: string;
 }
 
 interface ContentBlock {
-  type: 'markdown' | 'mermaid';
+  type: 'markdown' | 'mermaid' | 'chart';
   content: string;
   id?: string;
+  chartData?: ChartData;
 }
 
 function parseContent(content: string): ContentBlock[] {
   const blocks: ContentBlock[] = [];
-  const mermaidRegex = /```mermaid\s*\n([\s\S]*?)```/g;
+  const chartRegex = /```(mermaid|chart-data)\s*\n([\s\S]*?)```/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   let chartIndex = 0;
 
-  while ((match = mermaidRegex.exec(content)) !== null) {
-    // Text before the mermaid block
+  while ((match = chartRegex.exec(content)) !== null) {
     const textBefore = content.slice(lastIndex, match.index);
     if (textBefore.trim()) {
       blocks.push({ type: 'markdown', content: textBefore.trim() });
     }
 
-    // Mermaid chart block
-    blocks.push({
-      type: 'mermaid',
-      content: match[1].trim(),
-      id: `insight-chart-${chartIndex++}`,
-    });
+    const blockType = match[1];
+    const blockContent = match[2].trim();
+
+    if (blockType === 'chart-data') {
+      try {
+        const parsed = JSON.parse(blockContent);
+        if (parsed && parsed.type && parsed.data) {
+          blocks.push({
+            type: 'chart',
+            content: blockContent,
+            chartData: parsed as ChartData,
+            id: `insight-chart-${chartIndex++}`,
+          });
+        } else {
+          blocks.push({
+            type: 'mermaid',
+            content: blockContent,
+            id: `insight-chart-${chartIndex++}`,
+          });
+        }
+      } catch {
+        blocks.push({
+          type: 'mermaid',
+          content: blockContent,
+          id: `insight-chart-${chartIndex++}`,
+        });
+      }
+    } else {
+      blocks.push({
+        type: 'mermaid',
+        content: blockContent,
+        id: `insight-chart-${chartIndex++}`,
+      });
+    }
 
     lastIndex = match.index + match[0].length;
   }
 
-  // Remaining text after last mermaid block
   const remaining = content.slice(lastIndex);
   if (remaining.trim()) {
     blocks.push({ type: 'markdown', content: remaining.trim() });
@@ -127,7 +156,9 @@ export default function InsightDisplay({ content }: InsightDisplayProps) {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 md:p-8 insight-display">
       {blocks.map((block, index) => (
         <div key={index}>
-          {block.type === 'mermaid' ? (
+          {block.type === 'chart' && block.chartData ? (
+            <ChartRenderer data={block.chartData} />
+          ) : block.type === 'mermaid' ? (
             <MermaidChart chart={block.content} id={block.id} />
           ) : (
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>

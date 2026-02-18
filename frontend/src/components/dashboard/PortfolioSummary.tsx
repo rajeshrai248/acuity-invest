@@ -1,40 +1,33 @@
 import { DollarSign, TrendingUp, Percent, Hash } from 'lucide-react';
 import MetricCard from '../common/MetricCard';
+import { formatCurrency } from '../../utils/currency';
 import type { PortfolioSummaryData } from '../../types';
 
 interface PortfolioSummaryProps {
   summary: PortfolioSummaryData;
+  baseCurrency?: string;
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatGain(value: number): string {
+function formatGain(value: number, currency: string): string {
   const sign = value >= 0 ? '+' : '';
-  return `${sign}${formatCurrency(value)}`;
+  return `${sign}${formatCurrency(value, currency)}`;
 }
 
-export default function PortfolioSummary({ summary }: PortfolioSummaryProps) {
+export default function PortfolioSummary({ summary, baseCurrency = 'EUR' }: PortfolioSummaryProps) {
   const gainTrend = summary.total_gain >= 0 ? 'up' : 'down';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
         title="Total Value"
-        value={formatCurrency(summary.total_value)}
+        value={formatCurrency(summary.total_value, baseCurrency)}
         icon={<DollarSign size={22} />}
         trend="neutral"
       />
       <MetricCard
         title="Total Gain"
-        value={formatGain(summary.total_gain)}
-        subtitle={`Cost basis: ${formatCurrency(summary.total_cost)}`}
+        value={formatGain(summary.total_gain, baseCurrency)}
+        subtitle={`Cost basis: ${formatCurrency(summary.total_cost, baseCurrency)}`}
         icon={<TrendingUp size={22} />}
         trend={gainTrend}
       />

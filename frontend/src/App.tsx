@@ -60,6 +60,7 @@ function AuthenticatedApp({ onLogout, userName }: { onLogout: () => void; userNa
                 summary={summary}
                 holdings={holdingsWithMetrics}
                 customerName={userName || portfolio.customer_name}
+                baseCurrency={portfolio.base_currency}
               />
             }
           />

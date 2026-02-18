@@ -16,7 +16,7 @@ const SEED_PORTFOLIO_ID = '550e8400-e29b-41d4-a716-446655440002';
 
 const SEED_EMAIL = process.env.SEED_USER_EMAIL || 'demo@acuityinvest.com';
 const SEED_PASSWORD = process.env.SEED_USER_PASSWORD || 'Demo@12345';
-const SEED_NAME = process.env.SEED_USER_NAME || 'Demo User';
+const SEED_NAME = process.env.SEED_USER_NAME || 'Marc De Smedt';
 
 interface SeedHolding {
   ticker: string;
@@ -27,18 +27,27 @@ interface SeedHolding {
 }
 
 const seedHoldings: SeedHolding[] = [
-  { ticker: 'AAPL', name: 'Apple Inc.', shares: 150, avg_cost: 178.50, purchase_date: '2023-06-15' },
-  { ticker: 'MSFT', name: 'Microsoft Corporation', shares: 80, avg_cost: 342.10, purchase_date: '2023-04-20' },
-  { ticker: 'GOOGL', name: 'Alphabet Inc.', shares: 45, avg_cost: 138.75, purchase_date: '2023-08-10' },
-  { ticker: 'AMZN', name: 'Amazon.com Inc.', shares: 60, avg_cost: 145.30, purchase_date: '2023-07-05' },
-  { ticker: 'NVDA', name: 'NVIDIA Corporation', shares: 100, avg_cost: 475.50, purchase_date: '2023-09-12' },
-  { ticker: 'JPM', name: 'JPMorgan Chase & Co.', shares: 70, avg_cost: 152.80, purchase_date: '2023-03-22' },
-  { ticker: 'JNJ', name: 'Johnson & Johnson', shares: 90, avg_cost: 162.45, purchase_date: '2023-01-18' },
-  { ticker: 'V', name: 'Visa Inc.', shares: 55, avg_cost: 245.60, purchase_date: '2023-05-30' },
-  { ticker: 'PG', name: 'Procter & Gamble Co.', shares: 65, avg_cost: 155.20, purchase_date: '2023-02-14' },
-  { ticker: 'XOM', name: 'Exxon Mobil Corporation', shares: 120, avg_cost: 108.75, purchase_date: '2023-04-08' },
-  { ticker: 'VTI', name: 'Vanguard Total Stock Market ETF', shares: 200, avg_cost: 218.90, purchase_date: '2022-12-01' },
-  { ticker: 'BND', name: 'Vanguard Total Bond Market ETF', shares: 300, avg_cost: 73.50, purchase_date: '2022-11-15' },
+  // US Equities
+  { ticker: 'AAPL', name: 'Apple Inc.', shares: 120, avg_cost: 178.50, purchase_date: '2024-03-15' },
+  { ticker: 'MSFT', name: 'Microsoft Corp', shares: 55, avg_cost: 380.25, purchase_date: '2024-01-22' },
+  { ticker: 'NVDA', name: 'NVIDIA Corp', shares: 60, avg_cost: 120.50, purchase_date: '2024-06-10' },
+  { ticker: 'JPM', name: 'JPMorgan Chase', shares: 85, avg_cost: 195.40, purchase_date: '2024-02-18' },
+  // European Equities
+  { ticker: 'ABI.BR', name: 'AB InBev SA/NV', shares: 200, avg_cost: 52.30, purchase_date: '2024-04-08' },
+  { ticker: 'KBC.BR', name: 'KBC Group NV', shares: 130, avg_cost: 62.80, purchase_date: '2024-05-14' },
+  { ticker: 'UCB.BR', name: 'UCB SA', shares: 55, avg_cost: 85.60, purchase_date: '2024-01-10' },
+  { ticker: 'ASML.AS', name: 'ASML Holding NV', shares: 18, avg_cost: 620.00, purchase_date: '2024-03-28' },
+  { ticker: 'AGS.BR', name: 'Ageas SA/NV', shares: 220, avg_cost: 41.50, purchase_date: '2024-07-02' },
+  // Global ETFs
+  { ticker: 'IWDA.AS', name: 'iShares Core MSCI World UCITS ETF', shares: 400, avg_cost: 76.50, purchase_date: '2024-02-05' },
+  { ticker: 'VWCE.DE', name: 'Vanguard FTSE All-World UCITS ETF', shares: 200, avg_cost: 98.20, purchase_date: '2024-04-20' },
+  { ticker: 'IMAE.AS', name: 'iShares MSCI Europe UCITS ETF', shares: 250, avg_cost: 42.80, purchase_date: '2024-06-15' },
+  // Fixed Income
+  { ticker: 'IEGA.AS', name: 'iShares Core EUR Govt Bond UCITS ETF', shares: 350, avg_cost: 124.20, purchase_date: '2024-01-30' },
+  { ticker: 'BND', name: 'Vanguard Total Bond Market ETF', shares: 200, avg_cost: 75.80, purchase_date: '2024-03-12' },
+  // Alternatives
+  { ticker: 'GLD', name: 'SPDR Gold Shares', shares: 45, avg_cost: 185.30, purchase_date: '2024-05-08' },
+  { ticker: 'VNQ', name: 'Vanguard Real Estate ETF', shares: 80, avg_cost: 82.60, purchase_date: '2024-08-20' },
 ];
 
 async function seed(): Promise<void> {
@@ -69,7 +78,7 @@ async function seed(): Promise<void> {
     INSERT INTO portfolios (id, user_id, name, account_type, base_currency)
     VALUES (?, ?, ?, ?, ?)
   `);
-  insertPortfolio.run(SEED_PORTFOLIO_ID, SEED_USER_ID, 'Growth & Income Portfolio', 'Individual Brokerage', 'USD');
+  insertPortfolio.run(SEED_PORTFOLIO_ID, SEED_USER_ID, 'Private Banking Portfolio', 'Private Banking', 'EUR');
 
   console.log('Adding holdings...');
   const insertHolding = db.prepare(`
@@ -99,7 +108,7 @@ async function seed(): Promise<void> {
   console.log(`  User: ${SEED_NAME} (${SEED_USER_ID})`);
   console.log(`  Email: ${SEED_EMAIL}`);
   console.log(`  Tier: PREMIUM`);
-  console.log(`  Portfolio: Growth & Income Portfolio (${SEED_PORTFOLIO_ID})`);
+  console.log(`  Portfolio: Private Banking Portfolio (${SEED_PORTFOLIO_ID})`);
   console.log(`  Holdings: ${seedHoldings.length} positions`);
   console.log('  (Password is configured via SEED_USER_PASSWORD env var)');
   console.log('');

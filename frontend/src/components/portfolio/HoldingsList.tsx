@@ -1,19 +1,11 @@
 import { useState } from 'react';
 import { Trash2, AlertTriangle } from 'lucide-react';
+import { formatCurrencyByTicker } from '../../utils/currency';
 import type { HoldingWithMetrics } from '../../types';
 
 interface HoldingsListProps {
   holdings: HoldingWithMetrics[];
   onDelete: (ticker: string) => Promise<void>;
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
 }
 
 export default function HoldingsList({ holdings, onDelete }: HoldingsListProps) {
@@ -69,7 +61,7 @@ export default function HoldingsList({ holdings, onDelete }: HoldingsListProps) 
                 </div>
                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                   <span>{holding.shares} shares</span>
-                  <span>Avg {formatCurrency(holding.avg_cost)}</span>
+                  <span>Avg {formatCurrencyByTicker(holding.avg_cost, holding.ticker)}</span>
                   <span>Purchased {holding.purchase_date}</span>
                 </div>
               </div>
@@ -77,7 +69,7 @@ export default function HoldingsList({ holdings, onDelete }: HoldingsListProps) 
               {/* Value and Return */}
               <div className="text-right hidden sm:block">
                 <div className="text-sm font-medium text-gray-900 tabular-nums">
-                  {formatCurrency(holding.market_value)}
+                  {formatCurrencyByTicker(holding.market_value, holding.ticker)}
                 </div>
                 <div
                   className={`text-xs font-medium tabular-nums ${

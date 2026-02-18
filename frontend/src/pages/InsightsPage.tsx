@@ -36,10 +36,11 @@ export default function InsightsPage({ portfolioId, tier }: InsightsPageProps) {
 
   function handleChartFeatureCheck(insightResponse: InsightResponse): InsightResponse {
     // If FREE tier and response contains mermaid charts, gate it
-    if (tier === 'FREE' && insightResponse.insights.includes('```mermaid')) {
-      // Strip mermaid blocks for free users
+    const hasCharts = insightResponse.insights.includes('```mermaid') || insightResponse.insights.includes('```chart-data');
+    if (tier === 'FREE' && hasCharts) {
+      // Strip mermaid and chart-data blocks for free users
       const strippedInsights = insightResponse.insights.replace(
-        /```mermaid[\s\S]*?```/g,
+        /```(?:mermaid|chart-data)[\s\S]*?```/g,
         '\n> *[Chart visualization available for Premium subscribers]*\n'
       );
       setShowPremiumGate(true);

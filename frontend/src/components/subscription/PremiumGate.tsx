@@ -8,8 +8,8 @@ interface PremiumGateProps {
 }
 
 const premiumFeatures = [
-  { icon: PieChart, label: 'Interactive Mermaid Charts' },
-  { icon: BarChart3, label: 'Advanced Analytics & Visualizations' },
+  { icon: PieChart, label: 'Interactive Donut & Bar Charts' },
+  { icon: BarChart3, label: 'Radar & Area Visualizations' },
   { icon: Brain, label: 'AI Reasoning Scratchpad' },
   { icon: Zap, label: 'Unlimited AI Queries' },
 ];

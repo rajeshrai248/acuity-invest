@@ -52,6 +52,15 @@ function parseAIResponse(rawResponse: string): { scratchpad: string; insights: s
     insights = rawResponse.replace(scratchpadRegex, '').trim();
   }
 
+  // Strip any code fences Gemini wraps around markdown sections (```markdown, ```, etc.)
+  // but preserve mermaid and chart-data blocks which need to stay fenced for the renderer.
+  insights = insights.replace(/```([\w-]*)\n([\s\S]*?)```/g, (match, lang, content) => {
+    if (lang === 'mermaid' || lang === 'chart-data') {
+      return match; // keep chart/mermaid blocks intact
+    }
+    return content.trim(); // unwrap everything else (```markdown, ```json, ``` etc.)
+  });
+
   return { scratchpad, insights };
 }
 
@@ -148,10 +157,28 @@ export async function generateInsights(
       },
     });
 
-    // Step 5: Call Gemini API
+    // Step 5: Call Gemini API (with retry on 429 rate limits)
     const model = getGeminiModel(systemPrompt);
-    const result = await model.generateContent(userMessage);
-    const response = result.response;
+    const maxRetries = 3;
+    let result;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        result = await model.generateContent(userMessage);
+        break;
+      } catch (retryErr: unknown) {
+        const msg = retryErr instanceof Error ? retryErr.message : '';
+        const status = (retryErr as { status?: number }).status;
+        const isRateLimit = status === 429 || msg.includes('429') || msg.includes('quota') || msg.includes('Resource exhausted');
+        if (isRateLimit && attempt < maxRetries) {
+          const delayMs = Math.pow(2, attempt) * 1000; // 2s, 4s
+          console.warn(`[AI] Rate limited (attempt ${attempt}/${maxRetries}). Retrying in ${delayMs / 1000}s...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+        } else {
+          throw retryErr;
+        }
+      }
+    }
+    const response = result!.response;
 
     // Step 6: Extract text from response
     const rawText = response.text();

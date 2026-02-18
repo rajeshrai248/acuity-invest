@@ -1,19 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';
+import { formatCurrencyByTicker, getRegionGroup } from '../../utils/currency';
 import type { HoldingWithMetrics, SortConfig } from '../../types';
 
 interface HoldingsTableProps {
   holdings: HoldingWithMetrics[];
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
 }
 
 function getStatusEmoji(returnPct: number): string {
@@ -77,6 +69,19 @@ export default function HoldingsTable({ holdings }: HoldingsTableProps) {
     );
   }
 
+  const groupedHoldings = useMemo(() => {
+    const groups: Record<string, HoldingWithMetrics[]> = {};
+    const groupOrder = ['US Equities', 'European Equities', 'Global ETFs', 'Fixed Income', 'Alternatives'];
+    for (const holding of sortedHoldings) {
+      const group = getRegionGroup(holding.ticker);
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(holding);
+    }
+    return groupOrder
+      .filter(g => groups[g]?.length)
+      .map(g => ({ group: g, holdings: groups[g] }));
+  }, [sortedHoldings]);
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-100">
@@ -107,46 +112,56 @@ export default function HoldingsTable({ holdings }: HoldingsTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {sortedHoldings.map(holding => (
-              <tr
-                key={holding.ticker}
-                className="hover:bg-orange-50/30 transition-colors duration-100"
-              >
-                <td className="px-4 py-3">
-                  <span className="font-semibold text-gray-900 text-sm">{holding.ticker}</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600 max-w-[200px] truncate">
-                  {holding.name}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right tabular-nums">
-                  {holding.shares}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right tabular-nums">
-                  {formatCurrency(holding.avg_cost)}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right tabular-nums">
-                  {formatCurrency(holding.current_price)}
-                </td>
-                <td className="px-4 py-3 text-sm font-medium text-gray-900 text-right tabular-nums">
-                  {formatCurrency(holding.market_value)}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <span
-                    className={`text-sm font-medium tabular-nums ${
-                      holding.gain_loss >= 0 ? 'text-green-600' : 'text-red-600'
-                    }`}
+            {groupedHoldings.map(({ group, holdings: groupHoldings }) => (
+              <Fragment key={group}>
+                <tr className="bg-gray-50/70">
+                  <td colSpan={columns.length + 1} className="px-4 py-2">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{group}</span>
+                    <span className="text-xs text-gray-400 ml-2">({groupHoldings.length})</span>
+                  </td>
+                </tr>
+                {groupHoldings.map(holding => (
+                  <tr
+                    key={holding.ticker}
+                    className="hover:bg-orange-50/30 transition-colors duration-100"
                   >
-                    {holding.gain_loss >= 0 ? '+' : ''}
-                    {formatCurrency(holding.gain_loss)}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <StatusBadge value={holding.return_pct} />
-                </td>
-                <td className="px-4 py-3 text-center text-base">
-                  {getStatusEmoji(holding.return_pct)}
-                </td>
-              </tr>
+                    <td className="px-4 py-3">
+                      <span className="font-semibold text-gray-900 text-sm">{holding.ticker}</span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 max-w-[200px] truncate">
+                      {holding.name}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 text-right tabular-nums">
+                      {holding.shares}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 text-right tabular-nums">
+                      {formatCurrencyByTicker(holding.avg_cost, holding.ticker)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 text-right tabular-nums">
+                      {formatCurrencyByTicker(holding.current_price, holding.ticker)}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 text-right tabular-nums">
+                      {formatCurrencyByTicker(holding.market_value, holding.ticker)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span
+                        className={`text-sm font-medium tabular-nums ${
+                          holding.gain_loss >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        {holding.gain_loss >= 0 ? '+' : ''}
+                        {formatCurrencyByTicker(holding.gain_loss, holding.ticker)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <StatusBadge value={holding.return_pct} />
+                    </td>
+                    <td className="px-4 py-3 text-center text-base">
+                      {getStatusEmoji(holding.return_pct)}
+                    </td>
+                  </tr>
+                ))}
+              </Fragment>
             ))}
           </tbody>
         </table>

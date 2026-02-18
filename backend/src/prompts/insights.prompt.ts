@@ -50,6 +50,7 @@ The scratchpad content will be parsed out and NOT shown to the customer.
 After the scratchpad, deliver your insights in this structured format:
 
 #### Response Format Rules:
+- Output your response as **raw Markdown directly** — do NOT wrap it in a code fence (no \`\`\`markdown or \`\`\` around the whole response)
 - Use **Markdown** formatting throughout
 - Use section headers (##, ###) to organize content
 - Use **bold** for emphasis on key metrics and numbers
@@ -67,8 +68,11 @@ Always end your response with:
 }
 
 const PREMIUM_INSTRUCTIONS = `As a PREMIUM tier user, provide the FULL depth of analysis:
-- Advanced Mermaid.js charts (pie charts, bar charts, line charts)
-- Sector allocation visualization
+- Interactive charts using chart-data JSON blocks (donut, bar, radar, area)
+- Sector allocation visualization (donut chart)
+- Performance comparison (bar chart with green/red coloring)
+- Risk profile visualization (radar chart)
+- Value distribution (area chart)
 - Risk-adjusted metrics (Sharpe ratio estimates, Beta, volatility analysis)
 - Correlation insights between holdings
 - Dividend yield analysis (when applicable)
@@ -82,43 +86,41 @@ const FREE_INSTRUCTIONS = `As a FREE tier user, provide a concise but helpful an
 - Basic portfolio summary and composition
 - Top-level performance overview
 - General diversification observations
-- NO Mermaid charts (upgrade prompt for charts)
+- NO chart-data blocks (upgrade prompt for charts)
 - NO advanced risk metrics (upgrade prompt for risk analysis)
 At the end, include a brief note: "Upgrade to PREMIUM for advanced charts, risk analytics, and unlimited queries."`;
 
-const PREMIUM_FORMAT_RULES = `#### Mermaid Chart Guidelines (PREMIUM only):
-- Wrap all Mermaid diagrams in \`\`\`mermaid code blocks
-- Use **pie** charts for allocation breakdowns
-- Use **xychart-beta** for performance/comparison bar charts
-- Ensure all labels are readable and percentages add up correctly
-- **NEVER use negative numbers on y-axis tick values in xychart-beta** — let Mermaid auto-scale the axis instead
-- Keep xychart data arrays simple — only use integer or simple decimal values
+const PREMIUM_FORMAT_RULES = `#### Chart Guidelines (PREMIUM only):
+Wrap all chart data in \`\`\`chart-data code blocks containing valid JSON. Each chart object must have a \`type\` field and a \`data\` array.
 
-##### Pie Chart Example:
-\`\`\`mermaid
-pie title Portfolio Sector Allocation
-    "Technology" : 45.2
-    "Healthcare" : 12.8
-    "Financial" : 18.5
-    "Consumer" : 10.3
-    "Energy" : 8.1
-    "Fixed Income" : 5.1
+##### 1. Donut Chart (for allocation breakdowns):
+\`\`\`chart-data
+{"type":"donut","title":"Portfolio Sector Allocation","centerLabel":"$98,797","valueLabel":"%","data":[{"name":"Technology","value":45.2},{"name":"Healthcare","value":12.8},{"name":"Financial","value":18.5},{"name":"Consumer","value":10.3},{"name":"Energy","value":8.1},{"name":"Fixed Income","value":5.1}]}
 \`\`\`
 
-##### Bar Chart Example (xychart-beta):
-\`\`\`mermaid
-xychart-beta
-    title "Holdings Performance (%)"
-    x-axis ["AAPL", "MSFT", "GOOGL", "AMZN"]
-    y-axis "Gain/Loss (%)"
-    bar [38.2, 19.4, 107.5, 18.8]
+##### 2. Bar Chart (for performance comparison):
+\`\`\`chart-data
+{"type":"bar","title":"Holdings Performance","yAxisLabel":"Return (%)","bars":[{"dataKey":"value","label":"Return %"}],"data":[{"name":"AAPL","value":38.2},{"name":"MSFT","value":19.4},{"name":"GOOGL","value":107.5},{"name":"PG","value":-3.4}]}
 \`\`\`
 
-**IMPORTANT xychart-beta rules:**
-- Do NOT specify y-axis numeric range — just use a label like \`y-axis "Gain (%)"\`
-- Data values in bar [...] can be negative decimals like \`[-3.4, 12.5]\`
-- x-axis labels MUST be in square brackets with quoted strings
-- bar data MUST be in square brackets
+##### 3. Radar Chart (for risk profiles):
+\`\`\`chart-data
+{"type":"radar","title":"Risk Profile","data":[{"axis":"Diversification","value":72,"fullMark":100},{"axis":"Volatility","value":55,"fullMark":100},{"axis":"Growth","value":80,"fullMark":100},{"axis":"Income","value":40,"fullMark":100},{"axis":"Downside Protection","value":60,"fullMark":100}]}
+\`\`\`
+
+##### 4. Area Chart (for value distribution):
+\`\`\`chart-data
+{"type":"area","title":"Value Distribution","yAxisLabel":"Market Value ($)","areas":[{"dataKey":"value","label":"Market Value"}],"data":[{"name":"NVDA","value":2743},{"name":"AMZN","value":5740},{"name":"AAPL","value":11106}]}
+\`\`\`
+
+**IMPORTANT chart-data rules:**
+- JSON must be valid — use double quotes for all keys and string values
+- Every chart must have \`type\` and \`data\` fields
+- Donut: use for allocation/composition breakdowns. Include \`centerLabel\` for the total value and \`valueLabel\` for the unit (e.g., "%")
+- Bar: use for performance comparisons. Negative values will be colored red automatically. \`bars\` array defines the data series
+- Radar: use for risk/quality profiles. Each data point needs \`axis\`, \`value\`, and \`fullMark\`
+- Area: use for value distributions or trends. \`areas\` array defines the data series
+- Keep the JSON on a single line within the code block
 
 #### Table Format:
 Use markdown tables for holdings data:
@@ -128,9 +130,9 @@ Use markdown tables for holdings data:
 #### Sections to Include (when relevant to the query):
 1. **Portfolio Overview** — summary stats, total value, day change
 2. **Holdings Analysis** — detailed table with enriched data
-3. **Sector Allocation** — with Mermaid pie chart
-4. **Performance Insights** — gainers, losers, attribution
-5. **Risk Assessment** — concentration, diversification, volatility estimates
+3. **Sector Allocation** — with donut chart
+4. **Performance Insights** — with bar chart, gainers, losers, attribution
+5. **Risk Assessment** — with radar chart, concentration, diversification, volatility estimates
 6. **Key Observations** — notable patterns, outliers, suggestions for consideration
 `;
 

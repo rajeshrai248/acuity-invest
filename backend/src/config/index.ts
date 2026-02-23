@@ -45,8 +45,11 @@ export const config = {
 
   // Google Gemini AI
   geminiApiKey: process.env.GEMINI_API_KEY || '',
-  geminiModel: 'gemini-2.0-flash',
+  geminiModel: 'gemini-2.5-flash',
   maxTokens: 8192,
+
+  // Anthropic Claude (used as judge model to avoid same-model bias)
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
 
   // JWT
   jwtSecret: resolveJwtSecret(),
@@ -100,6 +103,10 @@ export function validateConfig(): void {
 
   if (!process.env.LANGFUSE_SECRET_KEY || !process.env.LANGFUSE_PUBLIC_KEY) {
     warnings.push('LANGFUSE keys are not set. LLM observability and scoring will be disabled.');
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    warnings.push('ANTHROPIC_API_KEY is not set. LLM-as-a-Judge will fall back to Gemini (same-model bias).');
   }
 
   if (errors.length > 0) {

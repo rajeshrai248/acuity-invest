@@ -168,70 +168,38 @@ ${params.response}`;
     let inputTokens = 0;
     let outputTokens = 0;
 
-    if (config.anthropicApiKey) {
-      // ── Claude judge (preferred: different model family = less same-model bias) ──
-      const { Anthropic } = await import('@anthropic-ai/sdk');
-      const anthropic = new Anthropic({ apiKey: config.anthropicApiKey });
-      judgeModelName = 'claude-haiku-4-5-20251001';
-
-      const judgeGeneration = judgeTrace.generation({
-        name: 'judge-evaluation',
-        model: judgeModelName,
-        input: judgePrompt,
-        metadata: { purpose: 'llm-as-a-judge-scoring', judgeFamily: 'anthropic' },
-      });
-
-      const message = await anthropic.messages.create({
-        model: judgeModelName,
-        max_tokens: 1024,
-        temperature: 0.1,
-        system: JUDGE_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: judgePrompt }],
-      });
-
-      rawJudgeText = message.content[0].type === 'text' ? message.content[0].text : '';
-      inputTokens = message.usage.input_tokens;
-      outputTokens = message.usage.output_tokens;
-
-      judgeGeneration.end({
-        output: rawJudgeText,
-        usage: { input: inputTokens, output: outputTokens, total: inputTokens + outputTokens, unit: 'TOKENS' },
-      });
-    } else {
-      // ── Gemini fallback (same model family as generator — less ideal) ──
-      if (!config.geminiApiKey) {
-        console.warn('[Langfuse Judge] No judge API key (Anthropic or Gemini) — skipping evaluation.');
-        return null;
-      }
-
-      const { GoogleGenerativeAI } = await import('@google/generative-ai');
-      const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-      judgeModelName = config.geminiModel;
-
-      const geminiJudge = genAI.getGenerativeModel({
-        model: judgeModelName,
-        systemInstruction: JUDGE_SYSTEM_PROMPT,
-        generationConfig: { maxOutputTokens: 1024, temperature: 0.1 },
-      });
-
-      const judgeGeneration = judgeTrace.generation({
-        name: 'judge-evaluation',
-        model: judgeModelName,
-        input: judgePrompt,
-        metadata: { purpose: 'llm-as-a-judge-scoring', judgeFamily: 'google', warning: 'same-model-bias' },
-      });
-
-      const result = await geminiJudge.generateContent(judgePrompt);
-      rawJudgeText = result.response.text();
-      const usage = result.response.usageMetadata;
-      inputTokens = usage?.promptTokenCount ?? 0;
-      outputTokens = usage?.candidatesTokenCount ?? 0;
-
-      judgeGeneration.end({
-        output: rawJudgeText,
-        usage: { input: inputTokens, output: outputTokens, total: inputTokens + outputTokens, unit: 'TOKENS' },
-      });
+    if (!config.geminiApiKey) {
+      console.warn('[Langfuse Judge] No Gemini API key — skipping evaluation.');
+      return null;
     }
+
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+    const genAI = new GoogleGenerativeAI(config.geminiApiKey);
+    judgeModelName = config.geminiModel;
+
+    const geminiJudge = genAI.getGenerativeModel({
+      model: judgeModelName,
+      systemInstruction: JUDGE_SYSTEM_PROMPT,
+      generationConfig: { maxOutputTokens: 1024, temperature: 0.1 },
+    });
+
+    const judgeGeneration = judgeTrace.generation({
+      name: 'judge-evaluation',
+      model: judgeModelName,
+      input: judgePrompt,
+      metadata: { purpose: 'llm-as-a-judge-scoring', judgeFamily: 'google' },
+    });
+
+    const result = await geminiJudge.generateContent(judgePrompt);
+    rawJudgeText = result.response.text();
+    const usage = result.response.usageMetadata;
+    inputTokens = usage?.promptTokenCount ?? 0;
+    outputTokens = usage?.candidatesTokenCount ?? 0;
+
+    judgeGeneration.end({
+      output: rawJudgeText,
+      usage: { input: inputTokens, output: outputTokens, total: inputTokens + outputTokens, unit: 'TOKENS' },
+    });
 
     // Parse scores
     const cleanedText = rawJudgeText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();

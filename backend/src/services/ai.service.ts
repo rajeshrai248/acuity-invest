@@ -31,8 +31,50 @@ function getGeminiModel(systemPrompt: string): GenerativeModel {
     generationConfig: {
       maxOutputTokens: config.maxTokens,
       temperature: 0.7,
+      thinkingConfig: { thinkingBudget: 0 },
     },
   });
+}
+
+/**
+ * Remove code fences that Gemini wraps around markdown sections
+ * (e.g. ```markdown, ```, ```json) while keeping ```mermaid and
+ * ```chart-data blocks intact so the frontend renderer can process them.
+ *
+ * Uses a line-by-line stack to correctly handle nested fences without
+ * accidentally consuming the opening backticks of chart blocks.
+ */
+function stripNonChartCodeFences(content: string): string {
+  const lines = content.split('\n');
+  const output: string[] = [];
+  const fenceStack: ('chart' | 'skip')[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (fenceStack.length > 0 && trimmed === '```') {
+      // Closing fence — pops the innermost open fence
+      const top = fenceStack[fenceStack.length - 1];
+      if (top === 'chart') output.push(line); // keep closing ``` for charts
+      fenceStack.pop();
+    } else {
+      const langMatch = trimmed.match(/^```([\w-]*)$/);
+      if (langMatch !== null) {
+        // Opening fence
+        const lang = langMatch[1];
+        if (lang === 'mermaid' || lang === 'chart-data') {
+          fenceStack.push('chart');
+          output.push(line); // keep opening ``` for charts
+        } else {
+          fenceStack.push('skip'); // strip opening fence for everything else
+        }
+      } else {
+        output.push(line); // regular content line
+      }
+    }
+  }
+
+  return output.join('\n');
 }
 
 /**
@@ -52,14 +94,10 @@ function parseAIResponse(rawResponse: string): { scratchpad: string; insights: s
     insights = rawResponse.replace(scratchpadRegex, '').trim();
   }
 
-  // Strip any code fences Gemini wraps around markdown sections (```markdown, ```, etc.)
-  // but preserve mermaid and chart-data blocks which need to stay fenced for the renderer.
-  insights = insights.replace(/```([\w-]*)\n([\s\S]*?)```/g, (match, lang, content) => {
-    if (lang === 'mermaid' || lang === 'chart-data') {
-      return match; // keep chart/mermaid blocks intact
-    }
-    return content.trim(); // unwrap everything else (```markdown, ```json, ``` etc.)
-  });
+  // Strip any code fences Gemini wraps around markdown (```markdown, ```, etc.)
+  // while keeping mermaid and chart-data blocks intact.
+  // Uses a line-by-line stack approach to handle nested fences correctly.
+  insights = stripNonChartCodeFences(insights);
 
   return { scratchpad, insights };
 }
@@ -229,12 +267,14 @@ export async function generateInsights(
     );
 
     // Step 9: Run LLM-as-a-Judge evaluation (async, non-blocking)
+    // Pass userMessage so the judge can cross-check numbers against source data
     evaluateWithJudge({
       traceId: insightId,
       query,
       response: insights,
       tier,
       model: config.geminiModel,
+      portfolioContext: userMessage,
     }).catch((err) => {
       console.warn('[AI] LLM-as-a-Judge evaluation failed (non-fatal):', err.message);
     });

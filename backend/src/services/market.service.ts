@@ -68,7 +68,7 @@ export async function getQuote(ticker: string): Promise<MarketQuote> {
 
     return quote;
   } catch (error) {
-    console.error(`Failed to fetch quote for ${normalizedTicker}:`, error);
+    console.warn(`Failed to fetch quote for ${normalizedTicker}:`, (error as Error).message);
 
     // If we have stale cache data, return it rather than failing
     if (cached) {
@@ -364,7 +364,7 @@ function getFallbackTickers(exchange: ExchangeKey): string[] {
     case 'BRUSSELS':
       return ['ABI.BR', 'KBC.BR', 'UCB.BR', 'SOLB.BR', 'ARGX.BR', 'SOF.BR', 'COLR.BR', 'AGS.BR', 'GBLB.BR', 'DIE.BR'];
     case 'AMSTERDAM':
-      return ['ASML.AS', 'SHEL.AS', 'PHIA.AS', 'INGA.AS', 'AD.AS', 'UNA.AS', 'HEIA.AS', 'PRX.AS', 'WKL.AS', 'ABN.AS'];
+      return ['ASML.AS', 'NN.AS', 'PHIA.AS', 'INGA.AS', 'AD.AS', 'UNA.AS', 'HEIA.AS', 'PRX.AS', 'WKL.AS', 'ABN.AS'];
     case 'BERLIN':
       return ['SAP.DE', 'SIE.DE', 'ALV.DE', 'BAS.DE', 'DTE.DE', 'BMW.DE', 'MBG.DE', 'ADS.DE', 'IFX.DE', 'MUV2.DE'];
     default:

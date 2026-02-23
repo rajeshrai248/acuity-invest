@@ -32,7 +32,7 @@ function getGeminiModel(systemPrompt: string): GenerativeModel {
       maxOutputTokens: config.maxTokens,
       temperature: 0.7,
       thinkingConfig: { thinkingBudget: 0 },
-    },
+    } as object,
   });
 }
 

@@ -180,7 +180,7 @@ ${params.response}`;
     const geminiJudge = genAI.getGenerativeModel({
       model: judgeModelName,
       systemInstruction: JUDGE_SYSTEM_PROMPT,
-      generationConfig: { maxOutputTokens: 1024, temperature: 0.1 },
+      generationConfig: { maxOutputTokens: 4096, temperature: 0.1 },
     });
 
     const judgeGeneration = judgeTrace.generation({

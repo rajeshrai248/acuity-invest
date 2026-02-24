@@ -82,16 +82,23 @@ function stripNonChartCodeFences(content: string): string {
  * The scratchpad is wrapped in <scratchpad>...</scratchpad> tags.
  */
 function parseAIResponse(rawResponse: string): { scratchpad: string; insights: string } {
-  const scratchpadRegex = /<scratchpad>([\s\S]*?)<\/scratchpad>/i;
-  const match = rawResponse.match(scratchpadRegex);
-
   let scratchpad = '';
   let insights = rawResponse;
 
-  if (match) {
-    scratchpad = match[1].trim();
-    // Remove the scratchpad from the visible response
-    insights = rawResponse.replace(scratchpadRegex, '').trim();
+  // Case 1: properly closed <scratchpad>...</scratchpad>
+  const closedMatch = rawResponse.match(/<scratchpad>([\s\S]*?)<\/scratchpad>/i);
+  if (closedMatch) {
+    scratchpad = closedMatch[1].trim();
+    insights = rawResponse.replace(/<scratchpad>[\s\S]*?<\/scratchpad>/i, '').trim();
+  } else {
+    // Case 2: opening tag present but no closing tag (Gemini 2.5 Flash behaviour).
+    // Strip from <scratchpad> up to the first markdown heading (##) that marks
+    // the start of the visible response.
+    const openMatch = rawResponse.match(/<scratchpad>([\s\S]*?)(?=\n#{1,6}\s)/i);
+    if (openMatch) {
+      scratchpad = openMatch[1].trim();
+      insights = rawResponse.replace(/<scratchpad>[\s\S]*?(?=\n#{1,6}\s)/i, '').trim();
+    }
   }
 
   // Strip any code fences Gemini wraps around markdown (```markdown, ```, etc.)

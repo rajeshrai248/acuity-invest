@@ -90,6 +90,7 @@ function parseAIResponse(rawResponse: string): { scratchpad: string; insights: s
   if (closedMatch) {
     scratchpad = closedMatch[1].trim();
     insights = rawResponse.replace(/<scratchpad>[\s\S]*?<\/scratchpad>/i, '').trim();
+    console.log('[AI Parse] Found closed scratchpad tag, extracted', scratchpad.length, 'chars');
   } else {
     // Case 2: opening tag present but no closing tag (Gemini 2.5 Flash behaviour).
     // Strip from <scratchpad> up to the first markdown heading (##) that marks
@@ -98,7 +99,38 @@ function parseAIResponse(rawResponse: string): { scratchpad: string; insights: s
     if (openMatch) {
       scratchpad = openMatch[1].trim();
       insights = rawResponse.replace(/<scratchpad>[\s\S]*?(?=\n#{1,6}\s)/i, '').trim();
+      console.log('[AI Parse] Found unclosed scratchpad tag, extracted', scratchpad.length, 'chars');
+    } else if (rawResponse.includes('<scratchpad>')) {
+      // Case 3: scratchpad tag exists but doesn't match patterns above (malformed)
+      console.warn('[AI Parse] Malformed scratchpad tag detected, removing it manually');
+      // Try to extract everything between <scratchpad> and either </scratchpad> or start of content
+      const startIdx = rawResponse.indexOf('<scratchpad>');
+      const endIdx = rawResponse.indexOf('</scratchpad>');
+      if (endIdx > startIdx) {
+        // Found closing tag
+        scratchpad = rawResponse.substring(startIdx + 12, endIdx).trim();
+        insights = rawResponse.substring(0, startIdx) + rawResponse.substring(endIdx + 13);
+        insights = insights.trim();
+      } else {
+        // No closing tag, try to find where content starts (look for ## or I/Your/etc.)
+        const contentMatch = rawResponse.substring(startIdx + 12).match(/\n(#{1,6}\s|I understand|Your portfolio|Here's)/);
+        if (contentMatch && contentMatch.index !== undefined) {
+          scratchpad = rawResponse.substring(startIdx + 12, startIdx + 12 + contentMatch.index).trim();
+          insights = rawResponse.substring(0, startIdx) + rawResponse.substring(startIdx + 12 + contentMatch.index);
+          insights = insights.trim();
+        } else {
+          // Can't parse, remove tag but keep content
+          insights = rawResponse.replace(/<scratchpad>/gi, '').replace(/<\/scratchpad>/gi, '').trim();
+          console.warn('[AI Parse] Could not parse scratchpad, removed tags but kept content');
+        }
+      }
     }
+  }
+
+  // Additional safety: if insights still contains scratchpad tags, strip them
+  if (insights.includes('<scratchpad>') || insights.includes('</scratchpad>')) {
+    console.warn('[AI Parse] Scratchpad tags still present in insights after parsing, removing...');
+    insights = insights.replace(/<\/?scratchpad>/gi, '').trim();
   }
 
   // Strip any code fences Gemini wraps around markdown (```markdown, ```, etc.)

@@ -1,0 +1,351 @@
+<mxfile host="app.diagrams.net" modified="2026-02-21T00:00:00.000Z" agent="Draw.io" version="22.0.0" etag="HLD-ServiceAgreements" type="device">
+  <diagram id="ServiceAgreementsHLD" name="Service Agreements - High Level Design">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="Service Agreements Application - High Level Design" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="600" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Presentation Layer -->
+        <mxCell id="presentationLayer" value="Presentation Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="280" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- IRIS Channel -->
+        <mxCell id="iris" value="IRIS&#xa;(Assisted Channel)&#xa;Employee Initiated Flow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="140" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Application Layer -->
+        <mxCell id="appLayer" value="Application Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="80" y="280" width="280" height="180" as="geometry" />
+        </mxCell>
+        
+        <!-- Service Agreements Core -->
+        <mxCell id="serviceAgreements" value="Service Agreements&#xa;Application&#xa;&#xa;Core Business Logic&#xa;API Gateway&#xa;Authentication &amp; Authorization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="320" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Integration Layer -->
+        <mxCell id="integrationLayer" value="Integration Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="440" y="100" width="1080" height="640" as="geometry" />
+        </mxCell>
+        
+        <!-- ONEPAM Master Data -->
+        <mxCell id="onepam" value="ONEPAM&#xa;(Master Data)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="480" y="140" width="280" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="involvedPartyAPI" value="InvolvedParty API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="510" y="185" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="productAgreementsAPI" value="Product Agreements API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="510" y="235" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="permissionsAPI" value="Permissions API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="510" y="285" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Rule Engine -->
+        <mxCell id="ruleEngine" value="Rule Engine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="800" y="140" width="280" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="pamQualificationsAPI" value="PAM Qualifications API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="830" y="185" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- ECA Enterprise Content Automation -->
+        <mxCell id="eca" value="ECA&#xa;(Enterprise Content Automation)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="140" width="280" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="commonCoreAPI" value="Common Core API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad9d5;strokeColor=#ae4132;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="185" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="connectDotAPI" value="Connect Dot API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad9d5;strokeColor=#ae4132;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="235" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="docSignAPI" value="DocSign API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad9d5;strokeColor=#ae4132;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="285" width="220" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Data & Messaging Layer -->
+        <mxCell id="dataLayer" value="Data &amp; Messaging Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="480" y="400" width="920" height="320" as="geometry" />
+        </mxCell>
+        
+        <!-- Kafka -->
+        <mxCell id="kafka" value="Apache Kafka" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#d6b656;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="520" y="450" width="360" height="240" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="kafkaLogging" value="Logging Topic&#xa;&#xa;Application Logs&#xa;Error Tracking&#xa;Performance Metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="550" y="500" width="140" height="170" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="kafkaNotifications" value="Business Notifications&#xa;&#xa;Workflow Events&#xa;Agreement Status&#xa;Rule Triggers&#xa;Document Events" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="710" y="500" width="150" height="170" as="geometry" />
+        </mxCell>
+        
+        <!-- Oracle Database -->
+        <mxCell id="oracleDB" value="Oracle DBAAS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="920" y="450" width="440" height="240" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="auditTrails" value="Audit Trails&#xa;&#xa;User Actions&#xa;API Calls&#xa;Data Changes&#xa;Timestamps&#xa;Transaction History" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="950" y="500" width="180" height="170" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="appStates" value="Application States&#xa;&#xa;Workflow Status&#xa;Agreement Data&#xa;Session Information&#xa;Business Entities&#xa;Configuration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="500" width="180" height="170" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        
+        <!-- IRIS to Service Agreements -->
+        <mxCell id="conn1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673a6;endArrow=classic;endFill=1;" edge="1" parent="1" source="iris" target="serviceAgreements">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn1Label" value="Initiates Flow" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="conn1">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Service Agreements to ONEPAM -->
+        <mxCell id="conn2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="involvedPartyAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="360" />
+              <mxPoint x="400" y="203" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn2Label" value="REST/SOAP" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="conn2">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="-30" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="productAgreementsAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="380" />
+              <mxPoint x="400" y="253" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="permissionsAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="400" />
+              <mxPoint x="400" y="303" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Service Agreements to Rule Engine -->
+        <mxCell id="conn5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#b85450;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="pamQualificationsAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="340" />
+              <mxPoint x="400" y="120" />
+              <mxPoint x="940" y="120" />
+              <mxPoint x="940" y="203" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn5Label" value="REST API" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="conn5">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="135" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Service Agreements to ECA APIs -->
+        <mxCell id="conn6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673a6;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="commonCoreAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="340" />
+              <mxPoint x="400" y="80" />
+              <mxPoint x="1260" y="80" />
+              <mxPoint x="1260" y="203" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn6Label" value="REST API" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="conn6">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="280" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673a6;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="connectDotAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="360" />
+              <mxPoint x="400" y="60" />
+              <mxPoint x="1280" y="60" />
+              <mxPoint x="1280" y="253" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9673a6;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="docSignAPI">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="380" />
+              <mxPoint x="400" y="40" />
+              <mxPoint x="1300" y="40" />
+              <mxPoint x="1300" y="303" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Service Agreements to Kafka -->
+        <mxCell id="conn9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#d79b00;endArrow=classic;endFill=1;dashed=1;" edge="1" parent="1" source="serviceAgreements" target="kafkaLogging">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="470" />
+              <mxPoint x="410" y="470" />
+              <mxPoint x="410" y="585" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn9Label" value="Async&#xa;Publish" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="conn9">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="-40" y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#d79b00;endArrow=classic;endFill=1;dashed=1;" edge="1" parent="1" source="serviceAgreements" target="kafkaNotifications">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="470" />
+              <mxPoint x="420" y="470" />
+              <mxPoint x="420" y="585" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Service Agreements to Oracle DB -->
+        <mxCell id="conn11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#6c8ebf;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="auditTrails">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="500" />
+              <mxPoint x="450" y="500" />
+              <mxPoint x="450" y="760" />
+              <mxPoint x="1040" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn11Label" value="JDBC/SQL" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="conn11">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="220" y="8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#6c8ebf;endArrow=classic;endFill=1;" edge="1" parent="1" source="serviceAgreements" target="appStates">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="500" />
+              <mxPoint x="460" y="500" />
+              <mxPoint x="460" y="780" />
+              <mxPoint x="1240" y="780" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1;verticalAlign=top;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="520" width="280" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend1" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="560" as="sourcePoint" />
+            <mxPoint x="180" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend1Text" value="REST/SOAP API Calls" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="190" y="548" width="150" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend2" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#6c8ebf;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="595" as="sourcePoint" />
+            <mxPoint x="180" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend2Text" value="Database Connection (JDBC)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="190" y="583" width="160" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend3" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#d79b00;dashed=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="630" as="sourcePoint" />
+            <mxPoint x="180" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend3Text" value="Async Messaging (Kafka)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="190" y="618" width="160" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend4" value="🔒 All connections secured&#xa;     with TLS/SSL encryption" style="text;html=1;strokeColor=none;fillColor=#fff2cc;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=9;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="100" y="665" width="240" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Architecture Notes -->
+        <mxCell id="notes" value="Architecture Notes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1;verticalAlign=top;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="760" width="1440" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note1" value="• IRIS (Assisted Channel): Employee-facing interface for initiating service agreement workflows" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="790" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note2" value="• ONEPAM: Centralized master data management for parties, products, and permissions with three dedicated APIs" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="810" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note3" value="• Rule Engine: PAM Qualifications API validates business rules and determines eligibility criteria" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="830" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note4" value="• ECA (Enterprise Content Automation): Document generation, workflow automation, and digital signature management" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="100" y="850" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note5" value="• Kafka: Event-driven architecture for logging, monitoring, and business event notifications across the system" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="800" y="790" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note6" value="• Oracle DBAAS: Persistent storage for audit trails (compliance) and application state management" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="800" y="810" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note7" value="• Authentication: Integrated with enterprise SSO/OAuth2 for secure access control" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="800" y="830" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="note8" value="• High Availability: Microservices architecture with load balancing, failover, and horizontal scaling capabilities" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="800" y="850" width="680" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Version Info -->
+        <mxCell id="version" value="Version: 1.0 | Date: February 2026 | Architect: Enterprise Architecture Team" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="600" y="900" width="400" height="20" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -3,7 +3,7 @@
 // Provides tracing, scoring, and LLM-as-a-Judge evaluation
 // ============================================================
 
-import Langfuse from 'langfuse';
+import { Langfuse } from 'langfuse';
 import { config } from '../config';
 
 let langfuseClient: Langfuse | null = null;
@@ -35,7 +35,7 @@ export function getLangfuse(): Langfuse | null {
  */
 export async function flushLangfuse(): Promise<void> {
   if (langfuseClient) {
-    await langfuseClient.flushAsync();
+    await langfuseClient.flush();
     console.log('[Langfuse] Flushed all pending events.');
   }
 }
@@ -45,10 +45,150 @@ export async function flushLangfuse(): Promise<void> {
  */
 export async function shutdownLangfuse(): Promise<void> {
   if (langfuseClient) {
-    await langfuseClient.shutdownAsync();
+    await langfuseClient.shutdown();
     langfuseClient = null;
     console.log('[Langfuse] Client shut down.');
   }
+}
+
+// ============================================================
+// Human Annotation — Score Configs & Annotation Queues
+// ============================================================
+
+/** Score config definitions for human reviewers */
+const ANNOTATION_SCORE_CONFIGS = [
+  {
+    name: 'human-accuracy',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Are all numbers, percentages, and figures correct against the source data?',
+  },
+  {
+    name: 'human-groundedness',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Are all factual claims traceable back to the provided portfolio data?',
+  },
+  {
+    name: 'human-relevance',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Does the response directly address the user query without tangents?',
+  },
+  {
+    name: 'human-compliance',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Does the response include disclaimers and avoid direct financial advice?',
+  },
+  {
+    name: 'human-clarity',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Is the response well-structured, readable, and professional?',
+  },
+  {
+    name: 'human-depth',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Does the analysis provide meaningful insights beyond restating raw data?',
+  },
+  {
+    name: 'human-overall',
+    dataType: 'NUMERIC' as const,
+    minValue: 1,
+    maxValue: 5,
+    description: 'Human review: Overall quality assessment of the AI-generated insight.',
+  },
+  {
+    name: 'human-approved',
+    dataType: 'BOOLEAN' as const,
+    description: 'Human review: Would you approve this response for production use?',
+  },
+];
+
+/**
+ * Ensure all human annotation score configs exist in Langfuse.
+ * Safe to call multiple times — skips configs that already exist.
+ * Call this at server startup.
+ */
+export async function setupAnnotationScoreConfigs(): Promise<void> {
+  const langfuse = getLangfuse();
+  if (!langfuse) return;
+
+  try {
+    const existing = await langfuse.api.scoreConfigsGet({});
+    const existingNames = new Set(existing.data.map((c: { name: string }) => c.name));
+
+    for (const cfg of ANNOTATION_SCORE_CONFIGS) {
+      if (existingNames.has(cfg.name)) continue;
+      await langfuse.api.scoreConfigsCreate(cfg);
+      console.log(`[Langfuse] Created score config: ${cfg.name}`);
+    }
+
+    console.log('[Langfuse] Annotation score configs verified.');
+  } catch (error) {
+    console.warn('[Langfuse] Failed to setup annotation score configs (non-fatal):', (error as Error).message);
+  }
+}
+
+/**
+ * Submit a human annotation score for a trace.
+ * Uses the Langfuse v3 API to create a score with ANNOTATION source.
+ */
+export async function submitHumanAnnotation(params: {
+  traceId: string;
+  scores: {
+    accuracy?: number;
+    groundedness?: number;
+    relevance?: number;
+    compliance?: number;
+    clarity?: number;
+    depth?: number;
+    overall?: number;
+    approved?: boolean;
+  };
+  comment?: string;
+  annotatorId?: string;
+}): Promise<void> {
+  const langfuse = getLangfuse();
+  if (!langfuse) throw new Error('Langfuse is not configured');
+
+  // Look up config IDs for validation
+  const configs = await langfuse.api.scoreConfigsGet({});
+  const configMap = new Map(configs.data.map((c: { name: string; id: string }) => [c.name, c.id]));
+
+  const scoreEntries: Array<{ name: string; value: number | string; dataType: string }> = [];
+
+  const numericDimensions = ['accuracy', 'groundedness', 'relevance', 'compliance', 'clarity', 'depth', 'overall'] as const;
+  for (const dim of numericDimensions) {
+    if (params.scores[dim] != null) {
+      scoreEntries.push({ name: `human-${dim}`, value: params.scores[dim]!, dataType: 'NUMERIC' });
+    }
+  }
+
+  if (params.scores.approved != null) {
+    scoreEntries.push({ name: 'human-approved', value: params.scores.approved ? 1 : 0, dataType: 'BOOLEAN' });
+  }
+
+  for (const entry of scoreEntries) {
+    await langfuse.api.scoreCreate({
+      traceId: params.traceId,
+      name: entry.name,
+      value: entry.value as number,
+      dataType: entry.dataType as 'NUMERIC' | 'BOOLEAN',
+      ...(configMap.has(entry.name) ? { configId: configMap.get(entry.name)! } : {}),
+      ...(params.comment ? { comment: params.comment } : {}),
+    });
+  }
+
+  console.log(`[Langfuse] Human annotation submitted for trace ${params.traceId}: ${scoreEntries.map(e => e.name).join(', ')}`);
 }
 
 // ============================================================
@@ -198,7 +338,7 @@ ${params.response}`;
 
     judgeGeneration.end({
       output: rawJudgeText,
-      usage: { input: inputTokens, output: outputTokens, total: inputTokens + outputTokens, unit: 'TOKENS' },
+      usageDetails: { input: inputTokens, output: outputTokens, total: inputTokens + outputTokens },
     });
 
     // Parse scores
@@ -206,11 +346,10 @@ ${params.response}`;
     const scores: JudgeScores = JSON.parse(cleanedText);
 
     // Log individual dimension scores to the ORIGINAL trace
-    const trace = langfuse.trace({ id: params.traceId });
-
     const dimensions = ['accuracy', 'groundedness', 'relevance', 'compliance', 'clarity', 'depth'] as const;
     for (const dim of dimensions) {
-      trace.score({
+      langfuse.score({
+        traceId: params.traceId,
         name: dim,
         value: scores[dim].score,
         comment: scores[dim].reason,
@@ -218,7 +357,8 @@ ${params.response}`;
     }
 
     // Overall score
-    trace.score({
+    langfuse.score({
+      traceId: params.traceId,
       name: 'overall-quality',
       value: scores.overall,
       comment: scores.summary,

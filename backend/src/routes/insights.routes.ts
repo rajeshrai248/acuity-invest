@@ -3,10 +3,10 @@
 // ============================================================
 
 import { Router } from 'express';
-import { generateInsightsHandler } from '../controllers/insights.controller';
+import { generateInsightsHandler, annotateInsightHandler } from '../controllers/insights.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { insightRateLimiter } from '../middleware/rateLimiter.middleware';
-import { validate, insightRequestSchema } from '../middleware/validation.middleware';
+import { validate, insightRequestSchema, annotationSchema } from '../middleware/validation.middleware';
 
 const router = Router();
 
@@ -28,6 +28,16 @@ router.post(
   insightRateLimiter,
   validate(insightRequestSchema),
   generateInsightsHandler
+);
+
+/**
+ * POST /api/v1/insights/annotate
+ * Submit a human annotation (scores + comment) for an insight trace.
+ */
+router.post(
+  '/annotate',
+  validate(annotationSchema),
+  annotateInsightHandler
 );
 
 export default router;

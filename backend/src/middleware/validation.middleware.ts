@@ -90,6 +90,24 @@ export const insightRequestSchema = z.object({
     .transform((val) => val.trim()),
 });
 
+// --- Annotation Schemas ---
+export const annotationSchema = z.object({
+  trace_id: z.string().min(1, 'Trace ID is required'),
+  scores: z.object({
+    accuracy: z.number().int().min(1).max(5).optional(),
+    groundedness: z.number().int().min(1).max(5).optional(),
+    relevance: z.number().int().min(1).max(5).optional(),
+    compliance: z.number().int().min(1).max(5).optional(),
+    clarity: z.number().int().min(1).max(5).optional(),
+    depth: z.number().int().min(1).max(5).optional(),
+    overall: z.number().int().min(1).max(5).optional(),
+    approved: z.boolean().optional(),
+  }).refine(obj => Object.values(obj).some(v => v != null), {
+    message: 'At least one score dimension is required',
+  }),
+  comment: z.string().max(2000).optional(),
+});
+
 // --- Market Schemas ---
 export const batchQuotesSchema = z.object({
   tickers: z

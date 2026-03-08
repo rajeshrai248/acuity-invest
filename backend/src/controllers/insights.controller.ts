@@ -5,6 +5,7 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest, ApiResponse, InsightResponse } from '../types';
 import { generateInsights } from '../services/ai.service';
+import { submitHumanAnnotation } from '../services/langfuse.service';
 import { sanitizeString } from '../utils/validators';
 
 /**
@@ -36,6 +37,35 @@ export async function generateInsightsHandler(
     };
 
     res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * POST /api/v1/insights/annotate
+ * Submit a human annotation for a trace.
+ */
+export async function annotateInsightHandler(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { trace_id, scores, comment } = req.body;
+    const annotatorId = req.user!.userId;
+
+    await submitHumanAnnotation({
+      traceId: trace_id,
+      scores,
+      comment,
+      annotatorId,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { message: 'Annotation submitted successfully', traceId: trace_id },
+    });
   } catch (error) {
     next(error);
   }

@@ -5,7 +5,7 @@
 import app from './app';
 import { config, validateConfig } from './config';
 import { initializeDatabase, closeDatabase } from './db/database';
-import { getLangfuse, shutdownLangfuse } from './services/langfuse.service';
+import { shutdownLangfuse, setupAnnotationScoreConfigs } from './services/langfuse.service';
 
 /**
  * Start the Acuity Invest backend server.
@@ -20,7 +20,12 @@ async function startServer(): Promise<void> {
     console.log('Initializing database...');
     initializeDatabase();
 
-    // Step 3: Start the Express server
+    // Step 3: Setup Langfuse annotation score configs (non-blocking)
+    setupAnnotationScoreConfigs().catch((err) => {
+      console.warn('Failed to setup Langfuse annotation configs:', err.message);
+    });
+
+    // Step 4: Start the Express server
     const server = app.listen(config.port, () => {
       console.log('');
       console.log('==============================================');

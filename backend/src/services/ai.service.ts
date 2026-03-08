@@ -166,7 +166,6 @@ export async function generateInsights(
       id: insightId,
       name: 'generate-insights',
       userId,
-      input: { query, tier, portfolioId },
     });
 
     // Step 2: Enrich portfolio with live market data + fetch market movers
@@ -214,15 +213,6 @@ export async function generateInsights(
 
     // Step 4: Create the audit log entry (before API call)
     createInsightLog(insightId, userId, portfolioId, query, null, tier);
-
-    // Update trace metadata now that we have enrichment data
-    trace?.update({
-      metadata: {
-        holdingsCount: enrichedPortfolio.holdings.length,
-        totalValue: enrichedPortfolio.total_value,
-        marketMoversExchanges: allExchanges,
-      },
-    });
 
     const generation = trace?.generation({
       name: 'gemini-insight-generation',
@@ -281,11 +271,10 @@ export async function generateInsights(
     // End the Langfuse generation with output and token usage
     generation?.end({
       output: insights.substring(0, 1000),
-      usage: {
+      usageDetails: {
         input: usageMetadata?.promptTokenCount ?? 0,
         output: usageMetadata?.candidatesTokenCount ?? 0,
         total: usageMetadata?.totalTokenCount ?? 0,
-        unit: 'TOKENS',
       },
       metadata: {
         scratchpadLength: scratchpad.length,
@@ -296,9 +285,15 @@ export async function generateInsights(
     // Step 8: Update the audit log with the response
     updateInsightLogResponse(insightId, insights);
 
-    // Update trace output
+    // Final trace update — single call with all fields to avoid partial overwrites
     trace?.update({
-      output: { insightsLength: insights.length, scratchpadLength: scratchpad.length },
+      input: { query, tier, portfolioId },
+      output: { response: insights },
+      metadata: {
+        holdingsCount: enrichedPortfolio.holdings.length,
+        totalValue: enrichedPortfolio.total_value,
+        marketMoversExchanges: allExchanges,
+      },
     });
 
     console.log(
@@ -343,6 +338,7 @@ export async function generateInsights(
       id: insightId,
       name: 'generate-insights',
       userId,
+      input: { query, tier, portfolioId },
       output: { error: err.message },
       metadata: { errorType: err.constructor.name },
       tags: ['error'],
